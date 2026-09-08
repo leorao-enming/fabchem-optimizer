@@ -13,6 +13,7 @@ htmlcov/
 # generated evidence/results are reproducible from configs — don't commit bulk output
 evidence/*.json
 !evidence/validation-summary.schema.json
+!evidence/case-manifest.schema.json
 cases/*/results/
 
 # IDAES/Pyomo scratch

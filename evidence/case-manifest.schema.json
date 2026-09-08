@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fabchem-optimizer/evidence/case-manifest.schema.json",
+  "title": "fabchem-optimizer case-run manifest",
+  "description": "Machine-readable result-traceability record for one case-study run, per Overview section 3.3. Written by `make cases` into cases/<case-name>/manifest.json — never hand-edited. Locked at P0 ahead of Gate C4 (when cases first land) so the evidence pipeline is proven with a hand-written fixture before any real case exists — see tests/unit/test_case_manifest_schema.py.",
+  "type": "object",
+  "required": [
+    "run_id",
+    "case_name",
+    "timestamp_utc",
+    "git_sha",
+    "app_version",
+    "dependency_lock_hash",
+    "config_hash",
+    "solver",
+    "wall_time_s",
+    "warnings",
+    "kpis"
+  ],
+  "properties": {
+    "run_id": { "type": "string" },
+    "case_name": {
+      "type": "string",
+      "enum": [
+        "validated-baseline",
+        "baseline-vs-optimized",
+        "stress-scenarios"
+      ]
+    },
+    "timestamp_utc": { "type": "string", "format": "date-time" },
+    "git_sha": { "type": "string" },
+    "app_version": { "type": "string" },
+    "dependency_lock_hash": { "type": "string" },
+    "config_hash": {
+      "type": "string",
+      "description": "hash of the frozen configs/cases/<case-name>.* + cost_basis input this run was generated from"
+    },
+    "solver": {
+      "type": "object",
+      "required": ["name", "version", "termination_condition"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "termination_condition": { "type": "string" }
+      }
+    },
+    "monte_carlo": {
+      "type": "object",
+      "description": "required once a case reports TAC distribution numbers (Overview section 5.3)",
+      "properties": {
+        "n_samples": { "type": "integer", "minimum": 2000 },
+        "distribution_assumptions_hash": { "type": "string" }
+      }
+    },
+    "wall_time_s": { "type": "number" },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "kpis": {
+      "type": "object",
+      "description": "case-specific key results (e.g. purity, recovery, tac_median, tac_ci_low/high) - shape varies by case_name and is not fixed at schema level"
+    }
+  },
+  "additionalProperties": false
+}
