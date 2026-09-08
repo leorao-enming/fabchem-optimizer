@@ -1,0 +1,55 @@
+[project]
+name = "fabchem-optimizer"
+version = "0.0.0"
+description = "Equation-oriented IPA/water recovery-and-dehydration flowsheet (IDAES/Pyomo) with screening-level TEA."
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+license = { text = "MIT" }
+authors = [{ name = "Leo", email = "leorao2004@gmail.com" }]
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "scipy>=1.13",
+    "streamlit>=1.37",
+    "pydantic>=2.7",
+    "matplotlib>=3.9",
+    "pyomo>=6.7",
+    "idaes-pse>=2.12",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2",
+    "pytest-cov>=5.0",
+    "ruff>=0.5",
+    "mypy>=1.10",
+    "jsonschema>=4.22",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
+warn_unused_ignores = true
+
+# NOTE: idaes-pse ships Python bindings only. IPOPT and other binary solver
+# extensions must be installed separately (`idaes get-extensions`) and are
+# NOT guaranteed to work identically across macOS/Windows/Linux — see
+# docs/adr/0001-c0-feasibility-spike.md and README "before writing any
+# flowsheet code" section. Docker/Linux is the release reference runtime.

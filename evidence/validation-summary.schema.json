@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fabchem-optimizer/evidence/validation-summary.schema.json",
+  "title": "fabchem-optimizer validation summary",
+  "description": "Machine-readable output of `make validate`. One object per validation run; mandatory checks failing must cause a non-zero exit before this file is even considered valid evidence.",
+  "type": "object",
+  "required": ["run_id", "timestamp_utc", "git_sha", "app_version", "checks"],
+  "properties": {
+    "run_id": { "type": "string" },
+    "timestamp_utc": { "type": "string", "format": "date-time" },
+    "git_sha": { "type": "string" },
+    "app_version": { "type": "string" },
+    "dependency_lock_hash": { "type": "string" },
+    "solver": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "termination_condition": { "type": "string" }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "mandatory", "passed"],
+        "properties": {
+          "name": { "type": "string" },
+          "mandatory": { "type": "boolean" },
+          "passed": { "type": "boolean" },
+          "detail": { "type": "string" },
+          "tolerance": { "type": "number" },
+          "observed": { "type": "number" }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

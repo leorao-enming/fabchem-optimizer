@@ -1,0 +1,24 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+.coverage
+htmlcov/
+
+# generated evidence/results are reproducible from configs — don't commit bulk output
+evidence/*.json
+!evidence/validation-summary.schema.json
+cases/*/results/
+
+# IDAES/Pyomo scratch
+*.trace
+ipopt.opt
+tmp/
+
+.DS_Store
+Thumbs.db
