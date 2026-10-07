@@ -63,3 +63,15 @@ only at real release Gates (C5 = v1.0.0), not for intermediate work.
 
 No flowsheet, no real NRTL parameters, no VLE validation (Gate C1). CI does not
 yet install IPOPT. The reference-runtime Dockerfile does not exist yet.
+
+### C1 prep: ADR 0001 Finding 3 diagnosed (2026-10-07)
+
+- Added `scripts/c1_init_diagnosis.py` (rerunnable; not part of `make validate`).
+  Result: IDAES `initialize()` steps 2-3 are infeasible in every case on the test
+  grid, including successful initializations, because the flash is solved with
+  gamma = 1 at an NRTL-derived bubble temperature where the ideal liquid is
+  subcooled. Only the last step is checked, so success depends on step 4 recovering.
+  Why step 4 fails around x_IPA = 0.5 is still not explained.
+- ADR 0001: appended an addendum; the original findings are unchanged.
+- Placeholder NRTL parameters only; nothing here concerns real IPA/water behaviour.
+

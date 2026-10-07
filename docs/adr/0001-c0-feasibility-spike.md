@@ -164,6 +164,34 @@ termination status alone was not trusted (Finding 2).
    (e.g. 356.42 K vs 356.51 K at x_IPA = 0.5). It did not change any answer in
    this spike (all 8 points match the reference) but is worth re-checking in C2.
 
+### Addendum 2026-10-07: Finding 3 diagnosed (placeholder NRTL parameters)
+
+`scripts/c1_init_diagnosis.py` reproduces this. Finding 3's guess that the failure is
+a property of x_IPA = 0.5 was wrong in a more basic way: `initialize()` steps 2 and 3
+are infeasible in **every** case on a 5-composition x 3-temperature grid, including the
+cases where initialization succeeds overall. IDAES raises only if the *last* step is not
+optimal, so success depends on whether step 4 (NRTL restored) recovers from the iterate
+the infeasible steps leave behind.
+
+Why steps 2-3 are infeasible (verified from the package source and numerically):
+`temperature_bubble` is built from NRTL activity coefficients at the feed composition
+(352.44 K at x_IPA = 0.5, equal to the independent reference), but step 2 solves the
+flash with gamma fixed at 1. For this system the NRTL dew temperature sits below the
+ideal-solution bubble point, so every operating temperature inside the real two-phase
+window is below the ideal bubble point; the gamma = 1 liquid is then subcooled
+(sum z_i Psat_i / P = 0.56-0.71 at the NRTL bubble temperature across the grid) and
+`eq_sum_mol_frac` cannot be satisfied. Step 1 also leaves `activity_coeff_comp` as a free
+variable (it was 23.4 / 1.63 for ipa / water at x_IPA = 0.5), so `T_dew` after step 1 is
+not meaningful (343.95 K, below T_bubble); this is the same coupling as Finding 7.
+
+Still **not** diagnosed: why step 4 fails to recover in a band around x_IPA = 0.5
+(T fractions 0.35-0.85 of the window; 0.05-0.25 and 0.95 recover), and it does not depend
+on the starting phase split (0.01-0.9) or on the phase-flow lower bound. Consequence for
+C2 is unchanged but now better grounded: do not rely on `initialize()` for this system;
+the non-ideality-aware start used in the spike avoids steps 2-3 entirely. Re-run with the
+sourced NRTL sets in C1; these are placeholder parameters, so nothing here is a statement
+about real IPA/water.
+
 ### Corrected during the spike (kept for the record)
 
 The first version of the independent reference declared x_IPA = 0.5 a superheated
