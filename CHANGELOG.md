@@ -75,3 +75,14 @@ yet install IPOPT. The reference-runtime Dockerfile does not exist yet.
 - ADR 0001: appended an addendum; the original findings are unchanged.
 - Placeholder NRTL parameters only; nothing here concerns real IPA/water behaviour.
 
+### C1 prep: NRTL sources read (2026-10-07)
+
+- Both candidate papers read in full. Source 1 (Barbieri et al., JCT 2024) supplies one
+  sourced NRTL set (tau = a + b/T, alpha = 0.47 fixed, fitted at 60-80 kPa); transcription
+  checked against its own data (~0.1 K). Source 2 (Moioli et al., JCED 2021) is not a
+  parameter source and not 101.3 kPa: it is new isobaric data at 103.5-300 kPa measured
+  against Aspen default parameters. Both come from the same lab, so Overview 5.5's
+  "two independent parameter sets" is not yet met. Corrections recorded in
+  `docs/model-basis-memo.md`. No code changed; the spike's placeholder parameters are
+  still placeholders.
+
