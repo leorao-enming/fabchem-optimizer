@@ -86,3 +86,19 @@ yet install IPOPT. The reference-runtime Dockerfile does not exist yet.
   `docs/model-basis-memo.md`. No code changed; the spike's placeholder parameters are
   still placeholders.
 
+### C1: second NRTL source and cross-lab check (2026-10-07)
+
+- Added `data/vle/` (published tables parsed from the PDFs, with provenance),
+  `scripts/c1_extract_vle_tables.py`, and `scripts/c1_nrtl_crosscheck.py`.
+- Second independent parameter source: Marzal et al. 1996 (NRTL at 30/60/100 kPa,
+  alpha 0.30, tau = A/RT, component 1 = water). Reproduces its reported in-sample fit.
+- Criteria frozen before running. Gate A (Barbieri params on Marzal 60 kPa) PASS
+  (0.245 K, 0.0060). Gate B (Marzal params on Barbieri 60 kPa) FAIL (0.828 K, 0.0385 vs
+  0.6 K / 0.03); a post-hoc look shows dilute-IPA noise plus a ~0.4 K inter-lab offset.
+  Gate not loosened. Barbieri's own reported fit is not reproduced (open).
+- Details in `docs/model-basis-memo.md`.
+- Third parameter set (Lin & Tu 2014, 101.3 kPa, tau = A/T) added as informational only
+  after the gates were frozen and run. It fits Marzal's data (0.32-0.33 K) but, like
+  Marzal's set, misses Barbieri's 60 kPa data (0.69 K), which suggests the offset is in
+  the Barbieri 60 kPa measurements (inference).
+

@@ -135,6 +135,73 @@ these respects:
   per block; tau = a + b/T needs checking against, or an extension of, the package.
   Not yet verified.
 
+### Frozen cross-check criteria (written 2026-10-07 BEFORE running the cross-lab comparison)
+
+Per Overview 5.6 the tolerance is fixed before results are seen. Cross-lab check of the
+two sourced NRTL sets, using the project's own pure-component vapor pressures (the
+Wagner constants in the C0 spike), bubble-temperature calculation at each measured
+(P, x):
+
+- Gate A: source 1 parameter set (Barbieri 2024, fitted 60-80 kPa) evaluated on
+  **Marzal 1996 at 60 kPa** (a different laboratory).
+- Gate B: Marzal 1996 parameter set for 60 kPa evaluated on **Barbieri 2024 at 60 kPa**.
+- Pass criterion for each gate: MAD(T) <= 0.6 K **and** MAD(y_IPA) <= 0.03. These are
+  about twice the in-sample fit quality the papers report (0.27-0.36 K and 0.0085-0.0095
+  for Marzal; 0.29 K and 0.0198 for Barbieri) - a deliberately modest margin for
+  different vapor-pressure correlations and laboratories.
+- Everything else (each set on its own data; each set at pressures outside its own fit,
+  e.g. 100 kPa, 80 kPa, 103.5-300 kPa) is reported as informational and labelled as
+  extrapolation where applicable; it does not pass or fail.
+- Sensitivity to the vapor-pressure correlation (paper's own Antoine vs the project's
+  Wagner) is reported but is not a gate.
+
+### Cross-check result (2026-10-07, `scripts/c1_nrtl_crosscheck.py`) - Gate A passes, Gate B FAILS
+
+Source 2 candidate is Marzal 1996 (Universitat de Valencia; independent lab). It publishes
+NRTL fits per pressure (Table 7): tau_ij = A_ij/(RT), A in J/mol, alpha = 0.30 fixed,
+**component 1 = water** (opposite to Barbieri). 30 / 60 / 100 kPa: A12 = 6726.08 / 6899.21 /
+6900.81, A21 = 111.46 / 106.99 / 77.49. The convention was checked against the paper's own
+reported infinite-dilution gammas, and the implementation reproduces its reported in-sample
+MAD(T) (0.278 / 0.361 / 0.311 K vs 0.28 / 0.36 / 0.31 K).
+
+Results against the criteria frozen above (project Wagner vapor pressures):
+
+| case | MAD(T) | MAD(y_IPA) | verdict |
+|---|---|---|---|
+| A: Barbieri params on Marzal 60 kPa | 0.245 K | 0.0060 | **PASS** |
+| B: Marzal(60) params on Barbieri 60 kPa | 0.828 K | 0.0385 | **FAIL** (limits 0.6 K / 0.03) |
+
+Not a gate: what the failure looks like. Residuals are dominated by x_IPA < 0.07, where the
+published x uncertainty (0.0215) exceeds the composition itself; both parameter sets miss
+there by up to ~3 K. Restricting to x_IPA >= 0.10 (a post-hoc choice made after seeing the
+gate result, labelled as such in the script): A 0.21 K / 0.0029, B 0.52 K / 0.0322,
+Barbieri's own params on its own data 0.15 K / 0.0309. So B's interior misfit is a ~0.4 K
+systematic offset between the two laboratories' 60 kPa temperatures near the azeotrope
+(Marzal's T are lower), and Barbieri's y values sit ~0.03-0.04 above any NRTL fit in
+x_IPA 0.3-0.6, even with its own parameters.
+
+Third parameter set, informational (read and added **after** the gates above were frozen and
+run, so it cannot be a gate): Lin & Tu, *Fluid Phase Equilib.* 368 (2014) 104-111, Table 5,
+2-propanol (1) + water (2) at 101.3 kPa only, NRTL A12 = -6.2261 K, A21 = 850.77 K,
+tau = A/T, alpha = 0.3 (Taiwan; independent of both other labs). MAD(T)/MAD(y_IPA) with the
+Wagner vapor pressures: on Marzal 100 kPa 0.321 K / 0.0096; Marzal 60 kPa 0.333 K / 0.0081;
+Barbieri 80 kPa 0.400 K / 0.0137; Barbieri 60 kPa 0.689 K / 0.0365. Lin & Tu and Marzal are
+two independent labs whose parameters agree with Marzal's data and both miss Barbieri's
+60 kPa set, while Barbieri's parameters fit Marzal's 60 kPa data well (Gate A). That
+points at the Barbieri 60 kPa measurements (dilute-IPA end and a ~0.4 K offset), not at the
+parameters - an inference from three labs, not a proven cause.
+
+Open: this implementation reproduces Marzal's reported fit exactly but not Barbieri's -
+Barbieri params on Barbieri data give 0.80 K / 0.042 at 60 kPa and 0.23 K / 0.010 at 80 kPa
+(mean about 0.5 K, y 0.026) against the paper's reported isobaric averages of 0.29 K / 0.0198.
+The cause is not established (Aspen's vapor-pressure and other property options are not
+printed in the paper; end points and the ideal-vapor assumption are other candidates).
+
+What this means for 5.5 is a judgement, not decided here: Gate B failed as written, so the
+two sets are **not** shown to be interchangeable on the other lab's data. They remain usable
+as two independently sourced parameter sets for the sensitivity analysis (which is its
+purpose), with the inter-lab offset reported as a finding, not hidden by loosening the gate.
+
 Earlier attempt, kept for the record:
 
 - `thermo` 0.6.1 bundled ChemSep NRTL databank: contains **no** isopropanol/water pair
