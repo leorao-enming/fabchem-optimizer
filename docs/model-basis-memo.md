@@ -121,6 +121,10 @@ applies) is agreed before C3, not improvised mid-optimization.
 - Whether the non-volatile contaminant is a pseudo-component or a separator
   assumption (Overview §5.1) — decided once the property package (C1) shows
   which is numerically tractable.
-- ADR 0001 (IDAES/IPOPT environment feasibility spike) is still `proposed`,
-  not yet executed — this memo does not depend on it, but no flowsheet code
-  should be written until ADR 0001 records a result.
+- ~~ADR 0001 (IDAES/IPOPT environment feasibility spike) not yet executed.~~
+  **Executed 2026-10-07 — GO**, result in `docs/adr/0001-c0-feasibility-spike.md`.
+  It verified the solver stack only; its NRTL parameters were placeholders, so
+  nothing in it counts toward the §4 parameter-source/VLE gate. Two of its
+  findings affect C1/C2 planning: IDAES's default initialization failed at
+  x_IPA = 0.5 (cause not yet established), and the smooth-flash smoothing
+  parameters must be set relative to the two-phase window near the azeotrope.

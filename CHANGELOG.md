@@ -30,3 +30,36 @@ only at real release Gates (C5 = v1.0.0), not for intermediate work.
 - CI push trigger watched `branches: [main]`; the actual default branch is
   `master`, so no CI run had ever fired since the repo was created. Corrected
   to `branches: [master]` — first real GitHub Actions run passed green.
+
+## [ADR 0001 executed] — 2026-10-07
+
+### Added
+
+- `scripts/c0_flash_spike.py`: the ADR 0001 solver-feasibility spike. IPA/water
+  isothermal flash with the IDAES activity-coefficient property package
+  (ideal vapor + NRTL liquid), solved with IPOPT, checked against an independent
+  numpy/scipy implementation of the same equations. **NRTL parameters are
+  unsourced placeholders** — this validates the solver stack, not IPA/water
+  thermodynamics. Wagner vapor-pressure constants and critical constants are
+  sourced (McGarry/Reid 4th ed.).
+- `scripts/validate.py` now runs the spike when IPOPT is available and records
+  `solver: {name, version, termination_condition}` as ADR 0001 requires. The
+  check is non-mandatory (CI has no IPOPT), so an unavailable solver is recorded
+  as "NOT RUN", never as a pass.
+
+### Changed
+
+- ADR 0001 status `proposed` -> `accepted`; **result: GO** on Windows 11 and on a
+  Debian 12 container (identical numbers, IPOPT 3.13.2, IDAES 2.13.0, Pyomo 6.10.1).
+  Seven findings recorded in the ADR, the ones that matter most: IDAES defaults
+  fail without domain bounds on T/Psat/phase flows; IPOPT `optimal` can be a
+  spurious solution; IDAES's built-in `initialize()` failed at x_IPA = 0.5 (cause
+  not established); smoothing error scales with eps/two-phase window; IDAES has
+  no extension build for Debian 12/13 (use `--distro ubuntu2204` plus four apt
+  packages).
+- `docs/model-basis-memo.md` open item for ADR 0001 updated.
+
+### Not done
+
+No flowsheet, no real NRTL parameters, no VLE validation (Gate C1). CI does not
+yet install IPOPT. The reference-runtime Dockerfile does not exist yet.

@@ -23,13 +23,18 @@ yet. Nothing in this repo should be treated as a working result until a
   numbers, and independent cross-validation against DWSIM — see
   `FabChem 差异化维度选择.md` in the planning vault for why
 
-## ⚠️ Before writing any flowsheet code: run the C0/C1 feasibility spike
+## C0 feasibility spike: done (GO) — read its findings before writing flowsheet code
 
 Per the Overview doc's risk table, IDAES/IPOPT environment stability is the
-single highest-risk item in this project and is deliberately validated
-*first*, months before it would otherwise be scheduled. Do not start on the
-baseline flowsheet until `docs/adr/0001-c0-feasibility-spike.md` records a
-go/no-go result.
+single highest-risk item in this project and was validated *first*.
+`docs/adr/0001-c0-feasibility-spike.md` records **GO** (2026-10-07): the stack
+solves an NRTL flash reliably on Windows 11 and a Debian 12 container. It also
+records seven findings that C1/C2 must respect — notably that IDAES's default
+initialization and default smoothing are not safe near the IPA/water azeotrope,
+and that an IPOPT `optimal` status must always be re-checked independently. The
+spike used placeholder NRTL parameters, so it says nothing about IPA/water
+thermodynamics; that is Gate C1. To re-run it: `idaes get-extensions` then
+`python scripts/c0_flash_spike.py`.
 
 ## Repository layout
 
@@ -65,7 +70,7 @@ not guaranteed there (section 5.6 of the Overview doc).
 | Gate | Deliverable | Status |
 |---|---|---|
 | P0 | Repo skeleton, ADR template, CI empty-run | ✅ this commit |
-| C1 | Thermo spike: IPA/water VLE match, NRTL provenance, solver smoke test | ⬜ not started |
+| C1 | Thermo spike: IPA/water VLE match, NRTL provenance, solver smoke test | ⬜ not started (solver smoke test already done early via ADR 0001; VLE match and NRTL provenance still open) |
 | C2 | Baseline flowsheet, mass/energy closure | ⬜ not started |
 | C3 | Optimization + TEA | ⬜ not started |
 | C4 | Scenarios + demo + 3 cases | ⬜ not started |
