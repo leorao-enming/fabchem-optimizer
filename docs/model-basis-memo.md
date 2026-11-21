@@ -251,6 +251,43 @@ What a Gate C result means: it is evidence for Leo's judgement on whether both s
 are usable for the sensitivity analysis; it does not turn Gate B into a pass, and it does
 not by itself pass Gate C1 of the project (the C1 Gate stays a judgement).
 
+### Gate C result (2026-11-21, `scripts/c1_gate_c.py`) - both pass
+
+Lin & Tu (2014) Table 2 has the binary data (15 interior points at 101.3 kPa), so the gate
+ran. The table was transcribed by hand into `data/vle/lintu2014_101kpa.csv` and checked by
+recomputing the paper's printed activity coefficients from its own Table 4 vapor pressures
+(gamma_1 identical on all 15 points, gamma_2 within 0.4 %). Criteria as frozen above:
+
+| case | MAD(T) | MAD(y_IPA) | verdict |
+|---|---|---|---|
+| C1: Marzal(100) params on Lin & Tu 101.3 kPa | 0.243 K | 0.0072 | **PASS** |
+| C2: Barbieri params on Lin & Tu 101.3 kPa (extrapolation) | 0.416 K | 0.0119 | **PASS** |
+| Lin & Tu params on own data (in-sample, informational) | 0.152 K | 0.0064 | - |
+
+Gate B is unchanged: it failed and stays failed.
+
+Post-hoc diagnosis of Gate B (after Gate B and Gate C; not a gate). This corrects the
+explanation written at the top of the Gate C section, which put the failure on the dilute
+end alone. Measured against Barbieri's own stated uncertainty (u(x) = 0.0215/2 propagated
+through dT_bubble/dx, u(T) = 0.073/2 K), Marzal(60)'s residuals on Barbieri 60 kPa split in
+two:
+
+- x_IPA < 0.10 (7 points): residuals up to +2.4 K but within about 2.4 u - large, and
+  consistent with the stated composition uncertainty;
+- x_IPA 0.14-0.90 (11 points): every residual is positive, +0.36 to +0.86 K, i.e. 4-17 u -
+  a systematic offset that the stated uncertainty does not cover.
+
+Barbieri's pure-component temperatures agree with the Wagner vapor pressures within 0.10 K,
+and two other laboratories (Marzal, Lin & Tu) agree with each other (Gate C1, and Lin & Tu
+parameters on Marzal 60/100 kPa 0.33/0.32 K). The likeliest reading is that Barbieri's
+60 kPa *mixture* temperatures run about 0.4-0.8 K high (for example a composition-analysis
+bias); this is an inference from three laboratories, not a demonstrated cause.
+
+For 5.5 this means (judgement still Leo's): both sourced sets reproduce an independent
+laboratory's 101.3 kPa data within the frozen limits, so both are defensible inputs to the
+sensitivity analysis; the Barbieri 60 kPa offset is a finding to report, not something to
+tune away.
+
 ## 5. Cost-basis placeholders (values TBD at C3, structure locked now)
 
 Per Overview §5.3 and §5.5 item 3, `configs/cost_basis.*` must declare, for

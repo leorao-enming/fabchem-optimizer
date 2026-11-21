@@ -172,3 +172,19 @@ Corrected during the work (kept for the record):
 Not done: the C1 Gate is still open (Gate B failed and stays failed; see memo). No flowsheet
 (C2). No comparison with real column data. The initializer handles the binary only.
 
+
+### C1: Gate C on independent data (2026-11-21)
+
+- Gate C criteria were written into `docs/model-basis-memo.md` and committed (`aa4f772`)
+  before the data were transcribed or compared. Data: Lin & Tu 2014 Table 2 (Taiwan; a third
+  laboratory), 15 interior points at 101.3 kPa, transcribed by hand into
+  `data/vle/lintu2014_101kpa.csv` and checked against the paper's printed activity
+  coefficients (gamma_1 identical, gamma_2 within 0.4 %).
+- `scripts/c1_gate_c.py`: Gate C1 (Marzal 100 kPa parameters) 0.243 K / 0.0072 **PASS**;
+  Gate C2 (Barbieri parameters, extrapolated to 101.3 kPa) 0.416 K / 0.0119 **PASS**.
+  Limits 0.6 K / 0.03 as for Gates A and B. Gate B is unchanged and still failed.
+- Post-hoc diagnosis of Gate B, corrected the same day: the dilute end (x_IPA < 0.10) is
+  within Barbieri's stated composition uncertainty, but the interior (x_IPA 0.14-0.90) sits
+  +0.36 to +0.86 K above the Marzal prediction at every point, 4-17 times the stated
+  uncertainty. With two other labs agreeing, the likeliest reading is a bias in Barbieri's
+  60 kPa mixture temperatures (inference).
