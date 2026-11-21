@@ -8,6 +8,7 @@ this repo. Compositions are stored as published.
 |---|---|---|---|
 | `barbieri2024_{60,80}kpa.csv` | Barbieri, De Guido, Moioli, *J. Chem. Thermodyn.* 198 (2024) 107342, Tables 4-5 | 60, 80 kPa | `x_ipa`, `y_ipa` |
 | `marzal1996_{30,60,100}kpa.csv` | Marzal, Monton, Rodrigo, *J. Chem. Eng. Data* 41 (1996) 608, Tables 3-5 (DOI 10.1021/je9503113) | 30, 60, 100 kPa | `x_water`, `y_water` |
+| `lintu2014_101kpa.csv` | Lin & Tu, *Fluid Phase Equilib.* 368 (2014) 104, Table 2 (transcribed by hand; checked against the paper's printed gammas, see `scripts/c1_gate_c.py`) | 101.3 kPa | `x_ipa`, `y_ipa` |
 
 Stated uncertainties: Barbieri U(x_ipa) 0.0215 (60 kPa) / 0.0300 (80 kPa), U(T) 0.073 / 0.036 K;
-Marzal composition accuracy +-0.001, T +-0.01 K. Moioli 2021 (103.5-300 kPa) is not included.
+Marzal composition accuracy +-0.001, T +-0.01 K; Lin & Tu u(x) 0.001, u(y) 0.002, u(T) 0.05 K. Moioli 2021 (103.5-300 kPa) is not included.
