@@ -218,6 +218,39 @@ Earlier attempt, kept for the record:
   them, the second has no IPA/water NRTL table. Neither is usable as a source.
 - The placeholder parameters in `scripts/c0_flash_spike.py` remain placeholders.
 
+### Gate C: frozen criteria (written 2026-11-21 BEFORE any data below is parsed or compared)
+
+Why: Gate B failed and stays failed. A diagnostic on 2026-11-21 (after Gate B, so it is
+post-hoc) located the failure in Barbieri's 60 kPa data rather than in either parameter set:
+its pure-component temperatures agree with the project's Wagner vapor pressures within
+0.10 K, but even Barbieri's own parameters miss its seven points below x_IPA = 0.07 by
++0.5 to +3.0 K, where its stated composition uncertainty (0.0215) exceeds the compositions.
+That is a reason to look for more independent evidence, not a reason to rerun Gate B with a
+different rule. Gate C adds evidence; it does not replace or reinterpret Gate B.
+
+Data source: Lin & Tu, *Fluid Phase Equilib.* 368 (2014) 104-111 (Taiwan; a laboratory
+independent of both Politecnico di Milano and Valencia), the binary 2-propanol + water
+isobaric VLE data at 101.3 kPa, **if the paper reports them**. Disclosure: this paper was
+read on 2026-10-07 for its NRTL parameter table (Table 5); its data tables have not been
+parsed, and no parameter set has been compared with them. If the paper has no binary
+2-propanol + water data table, Gate C is recorded as "not run"; any other source needs new
+criteria written here first.
+
+Gates (project Wagner vapor pressures; ideal vapor; pure end points excluded; **every other
+published point included, no exclusions after the fact**):
+
+- Gate C1: Marzal 1996 parameters fitted at 100 kPa, evaluated on the Lin & Tu 101.3 kPa
+  binary data (different laboratory; 1.3 kPa above the fitted pressure).
+- Gate C2: Barbieri 2024 parameters (fitted at 60-80 kPa), evaluated on the same data
+  (different laboratory; extrapolation to 101.3 kPa, labelled as such).
+- Pass criterion for each: MAD(T) <= 0.6 K **and** MAD(y_IPA) <= 0.03, the same limits as
+  Gates A and B, so the results are comparable.
+- Informational only: Lin & Tu's own parameters on their own data (in-sample).
+
+What a Gate C result means: it is evidence for Leo's judgement on whether both sourced sets
+are usable for the sensitivity analysis; it does not turn Gate B into a pass, and it does
+not by itself pass Gate C1 of the project (the C1 Gate stays a judgement).
+
 ## 5. Cost-basis placeholders (values TBD at C3, structure locked now)
 
 Per Overview §5.3 and §5.5 item 3, `configs/cost_basis.*` must declare, for
