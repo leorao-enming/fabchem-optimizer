@@ -134,6 +134,11 @@ these respects:
 - **Open for C2:** IDAES's activity-coefficient package takes tau as a fixed parameter
   per block; tau = a + b/T needs checking against, or an extension of, the package.
   Not yet verified.
+  *Update 2026-11-21:* resolved by `src/fabchem/nrtl_tdep.py` (tau evaluated at each
+  equation group's own temperature) and checked against the independent reference by
+  `scripts/c1_tdep_nrtl_check.py`; results and the initializer in the CHANGELOG entry
+  "C1: T-dependent NRTL in IDAES". This verifies the implementation, not the parameters -
+  the cross-lab result below is unchanged.
 
 ### Frozen cross-check criteria (written 2026-10-07 BEFORE running the cross-lab comparison)
 

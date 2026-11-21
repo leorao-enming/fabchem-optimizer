@@ -1,0 +1,49 @@
+name: Solver checks
+
+# Manual only. The fast CI job (ci.yml) does not install the IDAES binary extensions, so
+# every IPOPT-dependent test is skipped there. This job installs them and runs the
+# solver-dependent tests and the C1 check scripts. Trigger it from the Actions tab
+# (or `gh workflow run solver.yml --ref <branch>`).
+
+on:
+  workflow_dispatch:
+
+jobs:
+  solver:
+    # IDAES 2.13 ships extension builds for ubuntu 22.04 (ADR 0001 Finding 5); pin the
+    # runner image rather than following ubuntu-latest.
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Shared libraries the IPOPT binary needs (ADR 0001 Finding 6)
+        run: sudo apt-get update && sudo apt-get install -y libgfortran5 liblapack3 libblas3 libgomp1
+
+      - name: Install project and IDAES extensions
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          idaes get-extensions --distro ubuntu2204
+          python -c "import idaes; from pyomo.environ import SolverFactory as S; v = S('ipopt').version(); assert v, 'ipopt does not run'; print('ipopt', v)"
+
+      - name: All tests, solver-dependent ones included
+        run: pytest tests -q -rs
+
+      - name: C1 T-dependent NRTL check
+        run: python scripts/c1_tdep_nrtl_check.py
+
+      - name: C1 initializer check (140 states)
+        run: python scripts/c1_tdep_init_check.py
+
+      - name: Validation summary (includes the ADR 0001 spike)
+        run: python scripts/validate.py
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: solver-evidence
+          path: evidence/*.json
