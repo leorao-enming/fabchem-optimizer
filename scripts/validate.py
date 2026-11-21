@@ -115,16 +115,33 @@ def run_c1_checks(ipopt_available: bool) -> list[dict]:
             )
             continue
         result = subprocess.run([sys.executable, script], cwd=ROOT, capture_output=True, text=True)
-        detail = result.stdout.strip().splitlines()[-2:] if result.stdout.strip() else []
         checks.append(
             {
                 "name": name,
                 "mandatory": False,
                 "passed": result.returncode == 0,
-                "detail": f"{script} -> evidence/{result_file}: " + " | ".join(detail),
+                "detail": f"{script}: {_c1_detail(name, ROOT / 'evidence' / result_file)}",
             }
         )
     return checks
+
+
+def _c1_detail(name: str, path: Path) -> str:
+    try:
+        r = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return f"result file unreadable ({type(exc).__name__})"
+    if name == "c1_tdep_nrtl_check":
+        return (
+            f"{r['n_valid']}/{r['n_runs']} runs valid vs independent reference "
+            f"(reference + perturbed starts), worst deviation {r['worst_agreement']:.1e}"
+        )
+    s = r["summary"]
+    return (
+        f"new initializer {s['new']['valid']}/{s['new']['n']} valid; IDAES initialize() "
+        f"{s['idaes_default']['valid']}/{s['idaes_default']['n']} "
+        f"({s['idaes_default']['optimal_but_wrong']} optimal-but-wrong)"
+    )
 
 
 def build_summary() -> dict:
