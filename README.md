@@ -5,8 +5,10 @@ optimized for minimum total annualized cost, with a screening-level TEA layer.
 Built to demonstrate chemical process modeling, thermodynamics, and
 techno-economic analysis competency.
 
-**Status: P0 skeleton.** No property model, flowsheet, or optimization exists
-yet. Nothing in this repo should be treated as a working result until a
+**Status: C1 (thermodynamics) in progress.** An IPA/water property model
+(T-dependent NRTL with three sourced parameter sets) exists and is checked against an
+independent reference; the C1 Gate itself is not passed. No flowsheet or optimization
+exists yet. Nothing in this repo should be treated as a working result until a
 `v1.0.0` tag exists.
 
 ## What this project demonstrates
@@ -70,7 +72,7 @@ not guaranteed there (section 5.6 of the Overview doc).
 | Gate | Deliverable | Status |
 |---|---|---|
 | P0 | Repo skeleton, ADR template, CI empty-run | ✅ this commit |
-| C1 | Thermo spike: IPA/water VLE match, NRTL provenance, solver smoke test | ⬜ not started (solver smoke test already done early via ADR 0001; VLE match and NRTL provenance still open) |
+| C1 | Thermo spike: IPA/water VLE match, NRTL provenance, solver smoke test | 🟡 in progress: solver smoke test done (ADR 0001); three sourced NRTL sets with a cross-lab check (Gate A pass, Gate B fail - see `docs/model-basis-memo.md`); T-dependent NRTL in IDAES and its initializer checked against an independent reference (CHANGELOG). Gate not passed |
 | C2 | Baseline flowsheet, mass/energy closure | ⬜ not started |
 | C3 | Optimization + TEA | ⬜ not started |
 | C4 | Scenarios + demo + 3 cases | ⬜ not started |

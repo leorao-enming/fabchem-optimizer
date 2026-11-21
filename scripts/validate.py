@@ -11,6 +11,10 @@ Checks:
   the solver name/version/termination condition are recorded in the summary's
   `solver` field as ADR 0001 requires. It validates the solver stack only, never
   IPA/water thermodynamics (its NRTL parameters are placeholders).
+- c1_tdep_nrtl_check, c1_tdep_init_check (NOT mandatory, same reason): the C1
+  T-dependent NRTL property package checked against the independent reference, and its
+  initializer on 140 phase states. They verify the implementation; they are not the C1
+  VLE gate (that is scripts/c1_nrtl_crosscheck.py and docs/model-basis-memo.md).
 """
 
 import json
@@ -89,8 +93,43 @@ def run_flash_spike() -> tuple[dict, dict | None]:
     }, solver
 
 
+C1_SCRIPTS = (
+    ("c1_tdep_nrtl_check", "scripts/c1_tdep_nrtl_check.py", "c1-tdep-nrtl-check.json"),
+    ("c1_tdep_init_check", "scripts/c1_tdep_init_check.py", "c1-tdep-init-check.json"),
+)
+
+
+def run_c1_checks(ipopt_available: bool) -> list[dict]:
+    """C1 T-dependent NRTL checks. Non-mandatory for the same reason as the spike (they
+    need IPOPT, which the fast CI job does not install); recorded as NOT RUN without it."""
+    checks = []
+    for name, script, result_file in C1_SCRIPTS:
+        if not ipopt_available:
+            checks.append(
+                {
+                    "name": name,
+                    "mandatory": False,
+                    "passed": False,
+                    "detail": "NOT RUN: ipopt unavailable (run `idaes get-extensions`).",
+                }
+            )
+            continue
+        result = subprocess.run([sys.executable, script], cwd=ROOT, capture_output=True, text=True)
+        detail = result.stdout.strip().splitlines()[-2:] if result.stdout.strip() else []
+        checks.append(
+            {
+                "name": name,
+                "mandatory": False,
+                "passed": result.returncode == 0,
+                "detail": f"{script} -> evidence/{result_file}: " + " | ".join(detail),
+            }
+        )
+    return checks
+
+
 def build_summary() -> dict:
     spike_check, solver = run_flash_spike()
+    c1_checks = run_c1_checks(solver is not None)
     summary = {
         "run_id": f"validate-{datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')}",
         "timestamp_utc": datetime.now(UTC).isoformat(),
@@ -106,9 +145,11 @@ def build_summary() -> dict:
                 ),
             },
             spike_check,
+            *c1_checks,
         ],
         "warnings": [
-            "No property model, flowsheet, or optimization checks exist yet (C1-C3).",
+            "C1 property model (T-dependent NRTL, sourced parameter sets) exists; the C1 Gate "
+            "is still open. No flowsheet or optimization checks exist yet (C2-C3).",
             "NRTL parameters in the C0 spike are unsourced placeholders, not IPA/water data.",
         ],
     }
