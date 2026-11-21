@@ -65,8 +65,10 @@ def main() -> int:
         u = np.hypot(dtdx * 0.0215 / 2, 0.073 / 2)
         z.append((x, (t_exp - t0) / u))
     zs = np.array([abs(v) for _, v in z])
-    print(f"  Marzal(60) on Barbieri 60 kPa: |residual|/u median {np.median(zs):.2f}, "
-          f"max {zs.max():.2f}, points beyond 2u: {int((zs > 2).sum())}/{len(zs)}")
+    print(
+        f"  Marzal(60) on Barbieri 60 kPa: |residual|/u median {np.median(zs):.2f}, "
+        f"max {zs.max():.2f}, points beyond 2u: {int((zs > 2).sum())}/{len(zs)}"
+    )
     print(f"\nGates C1 and C2 both pass: {ok}")
     return 0 if ok else 1
 
